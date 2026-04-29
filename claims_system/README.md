@@ -1,3 +1,6 @@
+<img width="1210" height="596" alt="Screenshot 2026-04-29 at 10 48 02 AM" src="https://github.com/user-attachments/assets/65340314-bbfd-4fad-9749-12eba62f8550" />
+<img width="1210" height="596" alt="Screenshot 2026-04-29 at 10 48 35 AM" src="https://github.com/user-attachments/assets/fb1f2595-843e-4925-901f-98f6e33ab7eb" />
+<img width="1210" height="596" alt="Screenshot 2026-04-29 at 10 46 29 AM" src="https://github.com/user-attachments/assets/028e58fb-0d9c-4325-9467-fe43662dc290" />
 # Plum Claims Processing System
 
 This repository contains a small claims-processing backend and a lightweight UI to submit claims, run the assignment test cases, and inspect traces end-to-end.
