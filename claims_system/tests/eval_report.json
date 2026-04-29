@@ -1,0 +1,1168 @@
+[
+  {
+    "case_id": "TC001",
+    "case_name": "Wrong Document Uploaded",
+    "expected_decision": "STOP (doc issue)",
+    "actual_decision": "DOCUMENT_ISSUE",
+    "decision_matched": true,
+    "expected_amount": null,
+    "actual_amount": null,
+    "amount_matched": true,
+    "confidence_score": 1.0,
+    "rejection_reasons": [
+      "You uploaded 2 prescriptions, but a Hospital / Clinic Bill is required for a CONSULTATION claim. Please upload your clinic/hospital bill that shows the consultation charges."
+    ],
+    "approval_notes": [],
+    "fraud_signals": [],
+    "component_failures": [],
+    "processing_ms": 0.448,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "FAILED",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": false,
+            "detail": "Required: ['PRESCRIPTION', 'HOSPITAL_BILL']. Found: ['PRESCRIPTION', 'PRESCRIPTION']. Missing: ['HOSPITAL_BILL']."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": true,
+            "detail": "All documents belong to the same patient."
+          }
+        ],
+        "warnings": []
+      }
+    ]
+  },
+  {
+    "case_id": "TC002",
+    "case_name": "Unreadable Document",
+    "expected_decision": "STOP (doc issue)",
+    "actual_decision": "DOCUMENT_ISSUE",
+    "decision_matched": true,
+    "expected_amount": null,
+    "actual_amount": null,
+    "amount_matched": true,
+    "confidence_score": 1.0,
+    "rejection_reasons": [
+      "The document 'blurry_bill.jpg' could not be read \u2014 the image is too blurry or low quality. Please re-upload a clear, well-lit photo or scan of this document.",
+      "Missing required document: Pharmacy Bill. A Pharmacy Bill is required for PHARMACY claims. Please upload this document to proceed."
+    ],
+    "approval_notes": [],
+    "fraud_signals": [],
+    "component_failures": [],
+    "processing_ms": 0.041999999999999996,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "FAILED",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": false,
+            "detail": "Required: ['PRESCRIPTION', 'PHARMACY_BILL']. Found: ['PRESCRIPTION']. Missing: ['PHARMACY_BILL']."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": true,
+            "detail": "All documents belong to the same patient."
+          }
+        ],
+        "warnings": []
+      }
+    ]
+  },
+  {
+    "case_id": "TC003",
+    "case_name": "Documents Belong to Different Patients",
+    "expected_decision": "STOP (doc issue)",
+    "actual_decision": "DOCUMENT_ISSUE",
+    "decision_matched": true,
+    "expected_amount": null,
+    "actual_amount": null,
+    "amount_matched": true,
+    "confidence_score": 1.0,
+    "rejection_reasons": [
+      "Documents appear to belong to different patients: 'Rajesh Kumar' on Doctor's Prescription (prescription_rajesh.jpg) and 'Arjun Mehta' on Hospital / Clinic Bill (bill_arjun.jpg). All documents in a claim must belong to the same patient."
+    ],
+    "approval_notes": [],
+    "fraud_signals": [],
+    "component_failures": [],
+    "processing_ms": 0.039,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "FAILED",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": true,
+            "detail": "Required: ['PRESCRIPTION', 'HOSPITAL_BILL']. Found: ['PRESCRIPTION', 'HOSPITAL_BILL']. Missing: []."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": false,
+            "detail": "Documents appear to belong to different patients: 'Rajesh Kumar' on Doctor's Prescription (prescription_rajesh.jpg) and 'Arjun Mehta' on Hospital / Clinic Bill (bill_arjun.jpg). All documents in a claim must belong to the same patient."
+          }
+        ],
+        "warnings": []
+      }
+    ]
+  },
+  {
+    "case_id": "TC004",
+    "case_name": "Clean Consultation \u2014 Full Approval",
+    "expected_decision": "APPROVED",
+    "actual_decision": "APPROVED",
+    "decision_matched": true,
+    "expected_amount": 1350,
+    "actual_amount": 1350.0,
+    "amount_matched": true,
+    "confidence_score": 0.95,
+    "rejection_reasons": [],
+    "approval_notes": [
+      "Co-pay of 10% applied: \u20b9150.00 deducted \u2192 Final approved: \u20b91,350.00."
+    ],
+    "fraud_signals": [],
+    "component_failures": [],
+    "processing_ms": 0.281,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": true,
+            "detail": "Required: ['PRESCRIPTION', 'HOSPITAL_BILL']. Found: ['PRESCRIPTION', 'HOSPITAL_BILL']. Missing: []."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": true,
+            "detail": "All documents belong to the same patient."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "ExtractionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "extract_F007",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F007"
+          },
+          {
+            "name": "extract_F008",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F008"
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "FraudDetectionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "same_day_claims",
+            "passed": true,
+            "detail": "No claims history provided \u2014 skipped same-day check."
+          },
+          {
+            "name": "high_value_threshold",
+            "passed": true,
+            "detail": "Claim amount \u20b91,500 below high-value threshold \u20b925,000."
+          },
+          {
+            "name": "document_alteration",
+            "passed": true,
+            "detail": "No document alteration detected."
+          },
+          {
+            "name": "monthly_frequency",
+            "passed": true,
+            "detail": "No claims history \u2014 skipped monthly frequency check."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "DecisionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "member_eligibility",
+            "passed": true,
+            "detail": "Member is eligible."
+          },
+          {
+            "name": "policy_exclusions",
+            "passed": true,
+            "detail": "No policy exclusions triggered."
+          },
+          {
+            "name": "waiting_period",
+            "passed": true,
+            "detail": "Waiting period satisfied."
+          },
+          {
+            "name": "pre_authorization",
+            "passed": true,
+            "detail": "Pre-authorization not required for this claim."
+          },
+          {
+            "name": "per_claim_limit",
+            "passed": true,
+            "detail": "Claimed amount \u20b91,500 is within per-claim limit of \u20b95,000."
+          },
+          {
+            "name": "fraud_screening",
+            "passed": true,
+            "detail": "Fraud score: 0.00. Auto-processing allowed."
+          },
+          {
+            "name": "financial_calculation",
+            "passed": true,
+            "detail": "Claimed: \u20b91,500.00 | Network discount: \u20b90.00 | Co-pay: \u20b9150.00 | Approved: \u20b91,350.00"
+          }
+        ],
+        "warnings": [
+          "Co-pay of 10% applied: \u20b9150.00 deducted \u2192 Final approved: \u20b91,350.00."
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "TC005",
+    "case_name": "Waiting Period \u2014 Diabetes",
+    "expected_decision": "REJECTED",
+    "actual_decision": "REJECTED",
+    "decision_matched": true,
+    "expected_amount": null,
+    "actual_amount": null,
+    "amount_matched": true,
+    "confidence_score": 0.95,
+    "rejection_reasons": [
+      "WAITING_PERIOD: Specific waiting period for Diabetes is 90 days. Member joined on 2024-09-01. Eligible for Diabetes claims from 2024-11-30."
+    ],
+    "approval_notes": [],
+    "fraud_signals": [],
+    "component_failures": [],
+    "processing_ms": 0.187,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": true,
+            "detail": "Required: ['PRESCRIPTION', 'HOSPITAL_BILL']. Found: ['PRESCRIPTION', 'HOSPITAL_BILL']. Missing: []."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": true,
+            "detail": "All documents belong to the same patient."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "ExtractionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "extract_F009",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F009"
+          },
+          {
+            "name": "extract_F010",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F010"
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "FraudDetectionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "same_day_claims",
+            "passed": true,
+            "detail": "No claims history provided \u2014 skipped same-day check."
+          },
+          {
+            "name": "high_value_threshold",
+            "passed": true,
+            "detail": "Claim amount \u20b93,000 below high-value threshold \u20b925,000."
+          },
+          {
+            "name": "document_alteration",
+            "passed": true,
+            "detail": "No document alteration detected."
+          },
+          {
+            "name": "monthly_frequency",
+            "passed": true,
+            "detail": "No claims history \u2014 skipped monthly frequency check."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "DecisionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "member_eligibility",
+            "passed": true,
+            "detail": "Member is eligible."
+          },
+          {
+            "name": "policy_exclusions",
+            "passed": true,
+            "detail": "No policy exclusions triggered."
+          },
+          {
+            "name": "waiting_period",
+            "passed": false,
+            "detail": "Specific waiting period for Diabetes is 90 days. Member joined on 2024-09-01. Eligible for Diabetes claims from 2024-11-30."
+          }
+        ],
+        "warnings": [
+          "WAITING_PERIOD: Specific waiting period for Diabetes is 90 days. Member joined on 2024-09-01. Eligible for Diabetes claims from 2024-11-30."
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "TC006",
+    "case_name": "Dental Partial Approval \u2014 Cosmetic Exclusion",
+    "expected_decision": "PARTIAL",
+    "actual_decision": "PARTIAL",
+    "decision_matched": true,
+    "expected_amount": 8000,
+    "actual_amount": 8000.0,
+    "amount_matched": true,
+    "confidence_score": 0.95,
+    "rejection_reasons": [],
+    "approval_notes": [
+      "Partial approval: \u20b98,000 approved for covered dental procedures. \u20b94,000 excluded (cosmetic/non-covered dental procedures)."
+    ],
+    "fraud_signals": [],
+    "component_failures": [],
+    "processing_ms": 0.305,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": true,
+            "detail": "Required: ['HOSPITAL_BILL']. Found: ['HOSPITAL_BILL']. Missing: []."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": true,
+            "detail": "All documents belong to the same patient."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "ExtractionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "extract_F011",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F011"
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "FraudDetectionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "same_day_claims",
+            "passed": true,
+            "detail": "No claims history provided \u2014 skipped same-day check."
+          },
+          {
+            "name": "high_value_threshold",
+            "passed": true,
+            "detail": "Claim amount \u20b912,000 below high-value threshold \u20b925,000."
+          },
+          {
+            "name": "document_alteration",
+            "passed": true,
+            "detail": "No document alteration detected."
+          },
+          {
+            "name": "monthly_frequency",
+            "passed": true,
+            "detail": "No claims history \u2014 skipped monthly frequency check."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "DecisionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "member_eligibility",
+            "passed": true,
+            "detail": "Member is eligible."
+          },
+          {
+            "name": "policy_exclusions",
+            "passed": true,
+            "detail": "No policy exclusions triggered."
+          },
+          {
+            "name": "waiting_period",
+            "passed": true,
+            "detail": "Waiting period satisfied."
+          },
+          {
+            "name": "pre_authorization",
+            "passed": true,
+            "detail": "Pre-authorization not required for this claim."
+          },
+          {
+            "name": "dental_line_item_review",
+            "passed": true,
+            "detail": "Dental items: \u20b98,000 covered, \u20b94,000 excluded."
+          },
+          {
+            "name": "per_claim_limit",
+            "passed": true,
+            "detail": "Effective approved amount \u20b98,000 within DENTAL sub_limit of \u20b910,000."
+          },
+          {
+            "name": "fraud_screening",
+            "passed": true,
+            "detail": "Fraud score: 0.00. Auto-processing allowed."
+          },
+          {
+            "name": "financial_calculation",
+            "passed": true,
+            "detail": "Claimed: \u20b98,000.00 | Network discount: \u20b90.00 | Co-pay: \u20b90.00 | Approved: \u20b98,000.00"
+          }
+        ],
+        "warnings": [
+          "Partial approval: \u20b98,000 approved for covered dental procedures. \u20b94,000 excluded (cosmetic/non-covered dental procedures)."
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "TC007",
+    "case_name": "MRI Without Pre-Authorization",
+    "expected_decision": "REJECTED",
+    "actual_decision": "REJECTED",
+    "decision_matched": true,
+    "expected_amount": null,
+    "actual_amount": null,
+    "amount_matched": true,
+    "confidence_score": 0.95,
+    "rejection_reasons": [
+      "PRE_AUTH_REQUIRED: MRI requires pre-authorization when amount exceeds \u20b910,000. Claimed amount is \u20b915,000. Please obtain pre-authorization and resubmit the claim."
+    ],
+    "approval_notes": [],
+    "fraud_signals": [],
+    "component_failures": [],
+    "processing_ms": 0.375,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": true,
+            "detail": "Required: ['PRESCRIPTION', 'LAB_REPORT', 'HOSPITAL_BILL']. Found: ['PRESCRIPTION', 'LAB_REPORT', 'HOSPITAL_BILL']. Missing: []."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": true,
+            "detail": "All documents belong to the same patient."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "ExtractionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "extract_F012",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F012"
+          },
+          {
+            "name": "extract_F013",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F013"
+          },
+          {
+            "name": "extract_F014",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F014"
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "FraudDetectionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "same_day_claims",
+            "passed": true,
+            "detail": "No claims history provided \u2014 skipped same-day check."
+          },
+          {
+            "name": "high_value_threshold",
+            "passed": true,
+            "detail": "Claim amount \u20b915,000 below high-value threshold \u20b925,000."
+          },
+          {
+            "name": "document_alteration",
+            "passed": true,
+            "detail": "No document alteration detected."
+          },
+          {
+            "name": "monthly_frequency",
+            "passed": true,
+            "detail": "No claims history \u2014 skipped monthly frequency check."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "DecisionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "member_eligibility",
+            "passed": true,
+            "detail": "Member is eligible."
+          },
+          {
+            "name": "policy_exclusions",
+            "passed": true,
+            "detail": "No policy exclusions triggered."
+          },
+          {
+            "name": "waiting_period",
+            "passed": true,
+            "detail": "Waiting period satisfied."
+          },
+          {
+            "name": "pre_authorization",
+            "passed": false,
+            "detail": "MRI requires pre-authorization when amount exceeds \u20b910,000. Claimed amount is \u20b915,000."
+          }
+        ],
+        "warnings": [
+          "PRE_AUTH_REQUIRED: MRI requires pre-authorization when amount exceeds \u20b910,000. Claimed amount is \u20b915,000. Please obtain pre-authorization and resubmit the claim."
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "TC008",
+    "case_name": "Per-Claim Limit Exceeded",
+    "expected_decision": "REJECTED",
+    "actual_decision": "REJECTED",
+    "decision_matched": true,
+    "expected_amount": null,
+    "actual_amount": null,
+    "amount_matched": true,
+    "confidence_score": 0.95,
+    "rejection_reasons": [
+      "PER_CLAIM_EXCEEDED: Claimed amount \u20b97,500 exceeds the per-claim limit of \u20b95,000."
+    ],
+    "approval_notes": [],
+    "fraud_signals": [],
+    "component_failures": [],
+    "processing_ms": 0.222,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": true,
+            "detail": "Required: ['PRESCRIPTION', 'HOSPITAL_BILL']. Found: ['PRESCRIPTION', 'HOSPITAL_BILL']. Missing: []."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": true,
+            "detail": "All documents belong to the same patient."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "ExtractionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "extract_F015",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F015"
+          },
+          {
+            "name": "extract_F016",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F016"
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "FraudDetectionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "same_day_claims",
+            "passed": true,
+            "detail": "No claims history provided \u2014 skipped same-day check."
+          },
+          {
+            "name": "high_value_threshold",
+            "passed": true,
+            "detail": "Claim amount \u20b97,500 below high-value threshold \u20b925,000."
+          },
+          {
+            "name": "document_alteration",
+            "passed": true,
+            "detail": "No document alteration detected."
+          },
+          {
+            "name": "monthly_frequency",
+            "passed": true,
+            "detail": "No claims history \u2014 skipped monthly frequency check."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "DecisionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "member_eligibility",
+            "passed": true,
+            "detail": "Member is eligible."
+          },
+          {
+            "name": "policy_exclusions",
+            "passed": true,
+            "detail": "No policy exclusions triggered."
+          },
+          {
+            "name": "waiting_period",
+            "passed": true,
+            "detail": "Waiting period satisfied."
+          },
+          {
+            "name": "pre_authorization",
+            "passed": true,
+            "detail": "Pre-authorization not required for this claim."
+          },
+          {
+            "name": "per_claim_limit",
+            "passed": false,
+            "detail": "Claimed amount \u20b97,500 exceeds the per-claim limit of \u20b95,000."
+          }
+        ],
+        "warnings": [
+          "PER_CLAIM_EXCEEDED: Claimed amount \u20b97,500 exceeds the per-claim limit of \u20b95,000."
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "TC009",
+    "case_name": "Fraud Signal \u2014 Multiple Same-Day Claims",
+    "expected_decision": "MANUAL_REVIEW",
+    "actual_decision": "MANUAL_REVIEW",
+    "decision_matched": true,
+    "expected_amount": null,
+    "actual_amount": null,
+    "amount_matched": true,
+    "confidence_score": 0.6,
+    "rejection_reasons": [],
+    "approval_notes": [
+      "Claim routed to manual review due to fraud signals: Unusual pattern: 3 other claims already submitted on 2024-10-30 (limit: 2). Providers: Wellness Center, City Clinic A, City Clinic B."
+    ],
+    "fraud_signals": [
+      "Unusual pattern: 3 other claims already submitted on 2024-10-30 (limit: 2). Providers: Wellness Center, City Clinic A, City Clinic B."
+    ],
+    "component_failures": [],
+    "processing_ms": 0.388,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": true,
+            "detail": "Required: ['PRESCRIPTION', 'HOSPITAL_BILL']. Found: ['PRESCRIPTION', 'HOSPITAL_BILL']. Missing: []."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": true,
+            "detail": "All documents belong to the same patient."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "ExtractionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "extract_F017",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F017"
+          },
+          {
+            "name": "extract_F018",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F018"
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "FraudDetectionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "same_day_claims",
+            "passed": false,
+            "detail": "Unusual pattern: 3 other claims already submitted on 2024-10-30 (limit: 2). Providers: Wellness Center, City Clinic A, City Clinic B."
+          },
+          {
+            "name": "high_value_threshold",
+            "passed": true,
+            "detail": "Claim amount \u20b94,800 below high-value threshold \u20b925,000."
+          },
+          {
+            "name": "document_alteration",
+            "passed": true,
+            "detail": "No document alteration detected."
+          },
+          {
+            "name": "monthly_frequency",
+            "passed": true,
+            "detail": "Monthly claims (3) within limit (6)."
+          }
+        ],
+        "warnings": [
+          "Unusual pattern: 3 other claims already submitted on 2024-10-30 (limit: 2). Providers: Wellness Center, City Clinic A, City Clinic B."
+        ]
+      },
+      {
+        "agent": "DecisionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "member_eligibility",
+            "passed": true,
+            "detail": "Member is eligible."
+          },
+          {
+            "name": "policy_exclusions",
+            "passed": true,
+            "detail": "No policy exclusions triggered."
+          },
+          {
+            "name": "waiting_period",
+            "passed": true,
+            "detail": "Waiting period satisfied."
+          },
+          {
+            "name": "pre_authorization",
+            "passed": true,
+            "detail": "Pre-authorization not required for this claim."
+          },
+          {
+            "name": "per_claim_limit",
+            "passed": true,
+            "detail": "Claimed amount \u20b94,800 is within per-claim limit of \u20b95,000."
+          },
+          {
+            "name": "fraud_screening",
+            "passed": false,
+            "detail": "Fraud score: 0.45. Routing to MANUAL_REVIEW."
+          }
+        ],
+        "warnings": [
+          "Claim routed to manual review due to fraud signals: Unusual pattern: 3 other claims already submitted on 2024-10-30 (limit: 2). Providers: Wellness Center, City Clinic A, City Clinic B."
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "TC010",
+    "case_name": "Network Hospital \u2014 Discount Applied",
+    "expected_decision": "APPROVED",
+    "actual_decision": "APPROVED",
+    "decision_matched": true,
+    "expected_amount": 3240,
+    "actual_amount": 3240.0,
+    "amount_matched": true,
+    "confidence_score": 0.95,
+    "rejection_reasons": [],
+    "approval_notes": [
+      "Network hospital discount of 20% applied: \u20b9900.00 deducted from \u20b94,500.00 \u2192 \u20b93,600.00.",
+      "Co-pay of 10% applied: \u20b9360.00 deducted \u2192 Final approved: \u20b93,240.00."
+    ],
+    "fraud_signals": [],
+    "component_failures": [],
+    "processing_ms": 0.21800000000000003,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": true,
+            "detail": "Required: ['PRESCRIPTION', 'HOSPITAL_BILL']. Found: ['PRESCRIPTION', 'HOSPITAL_BILL']. Missing: []."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": true,
+            "detail": "All documents belong to the same patient."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "ExtractionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "extract_F019",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F019"
+          },
+          {
+            "name": "extract_F020",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F020"
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "FraudDetectionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "same_day_claims",
+            "passed": true,
+            "detail": "No claims history provided \u2014 skipped same-day check."
+          },
+          {
+            "name": "high_value_threshold",
+            "passed": true,
+            "detail": "Claim amount \u20b94,500 below high-value threshold \u20b925,000."
+          },
+          {
+            "name": "document_alteration",
+            "passed": true,
+            "detail": "No document alteration detected."
+          },
+          {
+            "name": "monthly_frequency",
+            "passed": true,
+            "detail": "No claims history \u2014 skipped monthly frequency check."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "DecisionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "member_eligibility",
+            "passed": true,
+            "detail": "Member is eligible."
+          },
+          {
+            "name": "policy_exclusions",
+            "passed": true,
+            "detail": "No policy exclusions triggered."
+          },
+          {
+            "name": "waiting_period",
+            "passed": true,
+            "detail": "Waiting period satisfied."
+          },
+          {
+            "name": "pre_authorization",
+            "passed": true,
+            "detail": "Pre-authorization not required for this claim."
+          },
+          {
+            "name": "per_claim_limit",
+            "passed": true,
+            "detail": "Claimed amount \u20b94,500 is within per-claim limit of \u20b95,000."
+          },
+          {
+            "name": "fraud_screening",
+            "passed": true,
+            "detail": "Fraud score: 0.00. Auto-processing allowed."
+          },
+          {
+            "name": "financial_calculation",
+            "passed": true,
+            "detail": "Claimed: \u20b94,500.00 | Network discount: \u20b9900.00 | Co-pay: \u20b9360.00 | Approved: \u20b93,240.00"
+          }
+        ],
+        "warnings": [
+          "Network hospital discount of 20% applied: \u20b9900.00 deducted from \u20b94,500.00 \u2192 \u20b93,600.00.",
+          "Co-pay of 10% applied: \u20b9360.00 deducted \u2192 Final approved: \u20b93,240.00."
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "TC011",
+    "case_name": "Component Failure \u2014 Graceful Degradation",
+    "expected_decision": "APPROVED",
+    "actual_decision": "APPROVED",
+    "decision_matched": true,
+    "expected_amount": null,
+    "actual_amount": 4000.0,
+    "amount_matched": true,
+    "confidence_score": 0.5,
+    "rejection_reasons": [],
+    "approval_notes": [
+      "\u26a0 One or more pipeline components failed during processing. Manual verification is recommended before disbursement."
+    ],
+    "fraud_signals": [],
+    "component_failures": [
+      "ExtractionAgent: partial failure (simulated or real)"
+    ],
+    "processing_ms": 0.48000000000000004,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": true,
+            "detail": "Required: ['PRESCRIPTION', 'HOSPITAL_BILL']. Found: ['PRESCRIPTION', 'HOSPITAL_BILL']. Missing: []."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": true,
+            "detail": "All documents belong to the same patient."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "ExtractionAgent",
+        "status": "PARTIAL",
+        "checks": [],
+        "warnings": [
+          "SIMULATED FAILURE: ExtractionAgent encountered a timeout. Partial data only."
+        ]
+      },
+      {
+        "agent": "FraudDetectionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "same_day_claims",
+            "passed": true,
+            "detail": "No claims history provided \u2014 skipped same-day check."
+          },
+          {
+            "name": "high_value_threshold",
+            "passed": true,
+            "detail": "Claim amount \u20b94,000 below high-value threshold \u20b925,000."
+          },
+          {
+            "name": "document_alteration",
+            "passed": true,
+            "detail": "No document alteration detected."
+          },
+          {
+            "name": "monthly_frequency",
+            "passed": true,
+            "detail": "No claims history \u2014 skipped monthly frequency check."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "DecisionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "member_eligibility",
+            "passed": true,
+            "detail": "Member is eligible."
+          },
+          {
+            "name": "policy_exclusions",
+            "passed": true,
+            "detail": "No policy exclusions triggered."
+          },
+          {
+            "name": "waiting_period",
+            "passed": true,
+            "detail": "Waiting period satisfied."
+          },
+          {
+            "name": "pre_authorization",
+            "passed": true,
+            "detail": "Pre-authorization not required for this claim."
+          },
+          {
+            "name": "per_claim_limit",
+            "passed": true,
+            "detail": "Claimed amount \u20b94,000 is within per-claim limit of \u20b95,000."
+          },
+          {
+            "name": "fraud_screening",
+            "passed": true,
+            "detail": "Fraud score: 0.00. Auto-processing allowed."
+          },
+          {
+            "name": "financial_calculation",
+            "passed": true,
+            "detail": "Claimed: \u20b94,000.00 | Network discount: \u20b90.00 | Co-pay: \u20b90.00 | Approved: \u20b94,000.00"
+          }
+        ],
+        "warnings": [
+          "\u26a0 One or more pipeline components failed during processing. Manual verification is recommended before disbursement."
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "TC012",
+    "case_name": "Excluded Treatment",
+    "expected_decision": "REJECTED",
+    "actual_decision": "REJECTED",
+    "decision_matched": true,
+    "expected_amount": null,
+    "actual_amount": null,
+    "amount_matched": true,
+    "confidence_score": 0.95,
+    "rejection_reasons": [
+      "EXCLUDED_CONDITION: Treatment 'Morbid Obesity \u2014 BMI 37' falls under excluded category: Obesity and weight loss programs. This is explicitly excluded by the policy and cannot be covered."
+    ],
+    "approval_notes": [],
+    "fraud_signals": [],
+    "component_failures": [],
+    "processing_ms": 0.154,
+    "agent_traces": [
+      {
+        "agent": "DocumentVerifierAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "required_documents_present",
+            "passed": true,
+            "detail": "Required: ['PRESCRIPTION', 'HOSPITAL_BILL']. Found: ['PRESCRIPTION', 'HOSPITAL_BILL']. Missing: []."
+          },
+          {
+            "name": "cross_patient_name_validation",
+            "passed": true,
+            "detail": "All documents belong to the same patient."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "ExtractionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "extract_F023",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F023"
+          },
+          {
+            "name": "extract_F024",
+            "passed": true,
+            "detail": "Extracted from pre-structured content for F024"
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "FraudDetectionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "same_day_claims",
+            "passed": true,
+            "detail": "No claims history provided \u2014 skipped same-day check."
+          },
+          {
+            "name": "high_value_threshold",
+            "passed": true,
+            "detail": "Claim amount \u20b98,000 below high-value threshold \u20b925,000."
+          },
+          {
+            "name": "document_alteration",
+            "passed": true,
+            "detail": "No document alteration detected."
+          },
+          {
+            "name": "monthly_frequency",
+            "passed": true,
+            "detail": "No claims history \u2014 skipped monthly frequency check."
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "agent": "DecisionAgent",
+        "status": "SUCCESS",
+        "checks": [
+          {
+            "name": "member_eligibility",
+            "passed": true,
+            "detail": "Member is eligible."
+          },
+          {
+            "name": "policy_exclusions",
+            "passed": false,
+            "detail": "Excluded conditions/treatments matched: ['Obesity and weight loss programs']"
+          }
+        ],
+        "warnings": [
+          "EXCLUDED_CONDITION: Treatment 'Morbid Obesity \u2014 BMI 37' falls under excluded category: Obesity and weight loss programs. This is explicitly excluded by the policy and cannot be covered."
+        ]
+      }
+    ]
+  }
+]
